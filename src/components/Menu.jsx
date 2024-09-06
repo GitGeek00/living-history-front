@@ -67,7 +67,9 @@ const Menu = () => {
           <Link to={"/"}>
             <img src={mainLogo} alt="" />
           </Link>
-          <Link to={"/profile"}>My profile</Link>
+          <Link to={"/profile"} reloadDocument>
+            My profile
+          </Link>
           <a href="#">My contributions</a>
           <a href="#">My revision requests</a>
           <a

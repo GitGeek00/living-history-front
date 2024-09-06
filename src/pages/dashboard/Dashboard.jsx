@@ -1,9 +1,37 @@
 import dashImg from "../../assets/dash_img.png";
 import dashboardStyles from "./Dashboard.module.css";
 import Menu from "../../components/Menu";
+import { ModalA } from "../../components/Modals";
+import credentials from "../../utils/credentials";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
-  return (
+  const [showModalA, setShowModalA] = useState(false);
+  const navigate = useNavigate();
+
+  const msg = "Not logged in";
+  const bodyMsg = "You should login first to access the dashboard";
+  const modalTitleColor = "text-danger";
+
+  useEffect(() => {
+    if (!credentials.user || !credentials.token) {
+      setShowModalA(true);
+    }    
+  },[]);
+
+  return !credentials.user || !credentials.token ? (
+    <>
+      <ModalA
+        showModal={showModalA}
+        setShowModal={setShowModalA}
+        msg={msg}
+        bodyMsg={bodyMsg}
+        modalTitleColor={"text-danger"}
+        handleClose={() => navigate(-1)}
+      />
+    </>
+  ) : (
     <>
       <div className={`container-fluid ${dashboardStyles.bg}`}>
         <div className="row">
@@ -18,7 +46,7 @@ const Dashboard = () => {
           DASHBOARD
         </h1>
         <h1 className="text-center" style={{ fontWeight: "800", fontSize: "4rem" }}>
-          Welcome Maher
+          Welcome {credentials.user}
         </h1>
         <h1 className={`${dashboardStyles.textFocusIn} text-center text-secondary`}>
           Embark on a wild journey through <br /> different historical eras.

@@ -3,8 +3,7 @@ import ButtonA from "./ButtonA";
 import Select from "react-select";
 import { Link } from "react-router-dom";
 
-const ModalA = ({ msg, bodyMsg, showModal, setShowModal, modalTitleColor }) => {
-  const handleClose = () => setShowModal(false);
+const ModalA = ({ msg, bodyMsg, showModal, setShowModal, modalTitleColor, handleClose }) => {
 
   return (
     <>

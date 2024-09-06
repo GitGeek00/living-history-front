@@ -1,7 +1,7 @@
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 
-const InputA = ({ label, labelClassName, type, inputName, onChange, controlClassName }) => {
+const InputA = ({ label, labelClassName, type, inputName, onChange, controlClassName, disabled, value }) => {
   return (
     <>
       <style type="text/css">
@@ -25,6 +25,8 @@ const InputA = ({ label, labelClassName, type, inputName, onChange, controlClass
           name={inputName}
           onChange={onChange}
           className={controlClassName}
+          disabled={disabled}
+          value={value}
         />
       </FloatingLabel>
     </>

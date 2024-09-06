@@ -1,13 +1,14 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import "aos/dist/aos.css";
 import homeStyles from "./home.module.css";
 import RegisterForm from "../components/RegisterForm";
 import LoginForm from "../components/LoginForm";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import { useRef, useState, useEffect } from "react";
-import axios from "axios";
-import { ModalA, ModalB } from "../components/Modals";
 import Menu from "../components/Menu";
+import AOS from "aos";
+import axios from "axios";
+import { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { ModalA, ModalB } from "../components/Modals";
 
 const Home = () => {
   const [regValues, setRegValues] = useState({
@@ -36,6 +37,8 @@ const Home = () => {
   const homeLinkRef = useRef("");
   const regLinkRef = useRef("");
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     AOS.init({
       duration: 1500,
@@ -59,6 +62,11 @@ const Home = () => {
 
     try {
       const data = await axios.post("http://localhost:3000/api/v1/auth/register", registerNewUser);
+      localStorage.setItem("token", data.data.token);
+      localStorage.setItem("userName", data.data.user.userName);
+      localStorage.setItem("userEmail", data.data.user.email);
+      navigate("/dashboard");
+      navigate(0);
     } catch (error) {
       if (error.response) {
         setModalTitleColor("text-danger");
@@ -107,6 +115,11 @@ const Home = () => {
 
     try {
       const data = await axios.post("http://localhost:3000/api/v1/auth/login", loginUser);
+      localStorage.setItem("token", data.data.token);
+      localStorage.setItem("userName", data.data.user.name);
+      localStorage.setItem("userEmail", data.data.user.email);
+      navigate("/dashboard");
+      navigate(0);
     } catch (error) {
       if (error.response) {
         setModalTitleColor("text-danger");
@@ -209,6 +222,7 @@ const Home = () => {
         msg={msg}
         bodyMsg={bodyMsg}
         modalTitleCOlor={modalTitleCOlor}
+        handleClose={() => setShowModalA(false)}
       />
 
       <ModalB showModal={showModalB} setShowModal={setShowModalB} />

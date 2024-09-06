@@ -1,10 +1,84 @@
 import InputA from "../../components/InputA";
 import ButtonA from "../../components/ButtonA";
-import mainLogo from "../../assets/logo.png";
 import Menu from "../../components/Menu";
+import credentials from "../../utils/credentials";
+import { ModalA } from "../../components/Modals";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Profile = () => {
-  return (
+  const [showModalA, setShowModalA] = useState(false);
+  const [nameState, setNameState] = useState("");
+  const [emailState, setEmailState] = useState("");
+  const [cityState, setCityState] = useState("");
+  const [countryState, setCountryState] = useState("");
+
+  const navigate = useNavigate();
+
+  const msg = "Not logged in";
+  const bodyMsg = "You should login first to access the dashboard";
+  const modalTitleColor = "text-danger";
+
+  axios.defaults.headers.common["Authorization"] = `Bearer ${credentials.token}`;
+
+  const getProfileData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/v1/profile`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        console.log(error);
+      } else if (error.request) {
+        console.log(error);
+      } else if (error.message) {
+        console.log(error.message);
+      }
+      throw new Error(error.response?.data?.msg || "Error fetching profiles");
+    }
+  };
+
+  const handleProfileChange = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.patch(`http://localhost:3000/api/v1/profile`, {
+        data: {
+          userName: nameState,
+          city: cityState,
+          country: countryState,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!credentials.user || !credentials.token) {
+      setShowModalA(true);
+    } else {
+      getProfileData().then((data) => {
+        setNameState(data.userName);
+        setCityState(data.city);
+        setCountryState(data.country);
+        setEmailState(data.email);
+      });
+    }
+  }, []);
+
+  return !credentials.user || !credentials.token ? (
+    <>
+      <ModalA
+        showModal={showModalA}
+        setShowModal={setShowModalA}
+        msg={msg}
+        bodyMsg={bodyMsg}
+        modalTitleColor={"text-danger"}
+        handleClose={() => navigate(-1)}
+      />
+    </>
+  ) : (
     <>
       <style>
         {`
@@ -39,11 +113,43 @@ const Profile = () => {
           </div>
           <div className="col-8 offset-4">
             <h5 className="text-secondary pb-4">My profile</h5>
-            <InputA label={"Full name"} type={"input"} labelClassName="text-black" controlClassName="mb-2" />
-            <InputA label={"Email address"} type={"input"} labelClassName="text-black" controlClassName="mb-2" />
-            <InputA label={"City"} type={"input"} labelClassName="text-black" controlClassName="mb-2" />
-            <InputA label={"Country"} type={"input"} labelClassName="text-black" controlClassName="mb-2" />
-            <ButtonA className="w-100 py-3 mt-3 btn-secondary shadow">Save changes</ButtonA>
+            <form onSubmit={handleProfileChange}>
+              <InputA
+                label={"Full name"}
+                type={"input"}
+                labelClassName="text-black"
+                controlClassName="mb-2"
+                onChange={(e) => setNameState(e.target.value)}
+                value={nameState}
+              />
+              <InputA
+                label={"Email address"}
+                type={"input"}
+                labelClassName="text-black"
+                controlClassName="mb-2"
+                disabled="disable"
+                value={emailState}
+              />
+              <InputA
+                label={"City"}
+                type={"input"}
+                labelClassName="text-black"
+                controlClassName="mb-2"
+                onChange={(e) => setCityState(e.target.value)}
+                value={cityState}
+              />
+              <InputA
+                label={"Country"}
+                type={"input"}
+                labelClassName="text-black"
+                controlClassName="mb-2"
+                onChange={(e) => setCountryState(e.target.value)}
+                value={countryState}
+              />
+              <ButtonA type={"submit"} className="w-100 py-3 mt-3 btn-secondary shadow">
+                Save changes
+              </ButtonA>
+            </form>
           </div>
         </div>
       </div>
